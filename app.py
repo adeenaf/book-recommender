@@ -6,6 +6,8 @@ import sqlite3
 import json
 import ast
 import re
+import zipfile
+import os
 
 
 app = Flask(__name__)
@@ -14,6 +16,10 @@ app.secret_key = 'your_secret_key'
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
+if not os.path.exists("books.db") and os.path.exists("books.zip"):
+    with zipfile.ZipFile("books.zip", "r") as zip_ref:
+        zip_ref.extractall(".")
+        
 @app.template_filter('parse_genres')
 def parse_genres_filter(value):
     try:
@@ -419,12 +425,6 @@ def series_books(series_name):
     return render_template('series_books.html', series_name=series_name, numbered_books=numbered_books,
         grouped_books=grouped_books
     )
-
-@app.route("/upload_db", methods=["POST"])
-def upload_db():
-    file = request.files["file"]
-    file.save("books.db")
-    return "Uploaded"
 
 
 if __name__ == '__main__':
