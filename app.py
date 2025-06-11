@@ -420,6 +420,12 @@ def series_books(series_name):
         grouped_books=grouped_books
     )
 
+@app.route("/upload_db", methods=["POST"])
+def upload_db():
+    file = request.files["file"]
+    file.save("books.db")
+    return "Uploaded"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
