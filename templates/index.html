@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}Home - BookVerse{% endblock %}
+
+{% block content %}
+<h1>Welcome to <span style="font-family: 'Pacifico', cursive; font-size: 2.8rem; letter-spacing: 1px">BookVerse</span> !</h1>
+{% if session.get('user_id') %}
+<p>Glad to see you back, {{ session['username'] }}!</p>
+
+{% else %}
+<p><a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">register</a> to start tracking your reading journey.</p> 
+{% endif %}
+
+<p>Use the search bar above to discover books you'll love!</p>
+<hr>
+<h2 class="mt-4">Explore by Genre</h2>
+<br>
+{% set genre_icons = {
+  'Romance': 'bi-heart-fill',
+  'Mystery': 'bi-search',
+  'Fantasy': 'bi-stars',
+  'Science Fiction': 'bi-cpu',
+  'Thriller': 'bi-exclamation-circle',
+  'Horror': 'bi-emoji-dizzy',
+  'Biography': 'bi-person',
+  'Children': 'bi-balloon',
+  'History': 'bi-clock',
+  'Default': 'bi-book'
+} %}
+{% for genre, books in genre_books.items() %}
+<div class="mt-4">
+  <h4 class="d-flex justify-content-between align-items-center">
+    <span>{{ genre }}</span>
+    <a href="{{ url_for('view_genre', genre_name=genre) }}" class="btn btn-link btn-sm">View All →</a>
+  </h4>
+
+  <div class="position-relative">
+    <div class="d-flex overflow-auto genre-carousel scroll-container" id="carousel-{{ loop.index }}">
+      {% for book in books %}
+      <div class="flex-shrink-0 me-3" style="width: 250px;">
+  <div class="card book-card h-100 shadow-sm">
+    <div class="card-body d-flex flex-column">
+      <div class="text-center mb-2">
+        <i class="bi {{ genre_icons.get(genre, genre_icons['Default']) }} fs-2 text-secondary"></i>
+      </div>
+      <h5 class="card-title text-center">{{ book['title'] }}</h5>
+      <p class="card-text text-muted text-center"><strong>Author:</strong> {{ book['author'] }}</p>
+      <a href="{{ url_for('book_details', book_id=book['id']) }}" class="btn btn-outline-primary mt-auto">View</a>
+    </div>
+  </div>
+</div>
+
+      {% endfor %}
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="carousel-btn left-btn" onclick="scrollCarousel('carousel-{{ loop.index }}', -1)">❮</button>
+    <button class="carousel-btn right-btn" onclick="scrollCarousel('carousel-{{ loop.index }}', 1)">❯</button>
+  </div>
+</div>
+{% endfor %}
+
+<script>
+function scrollCarousel(id, direction) {
+  const container = document.getElementById(id);
+  const scrollAmount = 270;  // Width of one card including margin
+  container.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth'
+  });
+}
+</script>
+
+{% endblock %}

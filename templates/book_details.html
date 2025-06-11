@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ book['title'] }} - Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <h1 class="mb-4 fw-bold" style="font-size: 2.5rem;">{{ book['title'] }}</h1>
+            <p class="text-muted mb-4">{{ '{:,}'.format(book['reviews']) or 'No' }} Ratings</p>
+
+            <p class="mb-2"><strong>Author:</strong> {{ book['author'] }}</p>
+            <p class="mb-2"><strong>Rating:</strong> {{ book['rating'] }} <i class="bi bi-star-fill text-warning"></i>
+            </p>
+            <p class="mb-2"><i class="bi bi-tags-fill me-2 text-secondary"></i><strong>Genres:</strong> {{
+                book['genres'] }}</p>
+            <p class="mb-3"><strong>Language:</strong> {{ book['language'] }}</p>
+            <p class="mt-4"><strong>Description:</strong></p>
+            <p class="text-justify" style="text-align: justify;">{{ book['description'] }}</p>
+            <p class="text-muted mt-2">Pages: {{ book['pages'] or 'N/A' }}</p>
+
+            {% if session.get('user_id') %}
+            <div id="book-actions-{{ book['id'] }}" class="btn-group mt-4" role="group" aria-label="Book actions">
+                {% set statuses = {'wishlist': 'info', 'reading': 'warning', 'read': 'success'} %}
+                {% for status, color in statuses.items() %}
+                {% set is_selected = current_status == status %}
+                <a href="{{ url_for('mark_book', book_id=book['id'], status=status) }}"
+                    class="btn btn-outline-{{ color }} btn-sm action-button {% if is_selected %}active{% else %}opacity-50{% endif %}"
+                    data-status="{{ status }}" data-book-id="{{ book['id'] }}">
+                    <i class="bi bi-check-circle-fill {% if not is_selected %}d-none{% endif %} me-1"></i>
+                    {% if status == 'wishlist' %}Add to Wishlist{% elif status == 'reading' %}Mark as Reading{% else
+                    %}Mark as Read{% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="col-lg-4 d-none d-lg-block">
+            {% if series_books %}
+            <h5 class="mb-3">Other books in this series</h5>
+            <div class="card book-card shadow-sm h-100">
+                <div class="card-body">
+                    {% for b in series_books[:10] %}
+                    {% if b['series'] and '#' in b['series'] and '-' not in b['series'] %}
+                    <div class="mb-3">
+                        <a href="{{ url_for('book_details', book_id=b['id']) }}" class="card-title d-block">{{
+                            b['title'] }}</a>
+                        <small class="text-muted">{{ b['author'] }}</small>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <a href="{{ url_for('series_books', series_name=book['series'].split('#')[0].strip()) }}"
+                        class="btn btn-outline-primary mt-3 w-100">View All</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <hr class="my-5">
+    {% if recommendations %}
+    <h3 class="mb-4">Recommended Books</h3>
+    <div class="row">
+        {% for recommended_book in recommendations %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card book-card h-100 shadow-sm">
+                <h5 class="card-title">{{ recommended_book['title'] }}</h5>
+                <p class="card-text">{{ recommended_book['author'] }}</p>
+                <a href="{{ url_for('book_details', book_id=recommended_book['id']) }}"
+                    class="btn btn-info mt-auto">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No highly similar books found.</p>
+    {% endif %}
+
+
+    {% if fallback %}
+    <hr class="my-4">
+    <p><em>We couldn't find very close matches, but here are some loosely related titles:</em></p>
+    <div class="row">
+        {% for recommended_book in fallback %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card book-card h-100 shadow-sm">
+                <h5 class="card-title">{{ recommended_book['title'] }}</h5>
+                <p class="card-text">{{ recommended_book['author'] }}</p>
+                <a href="{{ url_for('book_details', book_id=recommended_book['id']) }}"
+                    class="btn btn-info mt-auto">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
