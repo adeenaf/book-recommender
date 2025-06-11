@@ -1,4 +1,4 @@
-# BOOKVERSE - Book Recommendation System
+# BookVerse - Book Recommendation System
 #### Video Demo: https://youtu.be/-_Hfr5PkJjI
 #### Live Demo: https://bookverse-jbew.onrender.com
 #### Description: 
