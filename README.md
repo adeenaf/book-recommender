@@ -1,5 +1,6 @@
 # BOOKVERSE - Book Recommendation System
 #### Video Demo: https://youtu.be/-_Hfr5PkJjI
+#### Live Demo: https://bookverse-jbew.onrender.com
 #### Description: 
 This project is a **Book Recommendation System** web application designed to help users discover books similar to those they enjoy, based on a sophisticated hybrid recommendation algorithm and a user-friendly interface. The system leverages a rich dataset of over 50,000 books, extracting metadata from CSV files, storing it in an SQLite database, and providing dynamic recommendations based on genres, descriptions, and author information.
 
